@@ -5,8 +5,33 @@ version: '3.8'
 services:
   web:
     build: .
-    command: uvicorn app.main:app --host 0.0.0.0
+    # Move from stupid loop to condition:healthy OR reconnect logic
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --host 0.0.0.0'
     volumes:
       - .:/app
     ports:
+      # 127.0.0.1:8008
       - 8008:8000
+    environment:
+      - DATABASE_URL=postgresql://entropy_fastgre_testuser:entropy_fastgre_testpass@db:5432/entropy_fastgre_db
+    depends_on:
+      - db
+  db:
+    # $ docker-compose exec db psql --username=entropy_fastgre_testuser --dbname=entropy_fastgre_db
+    # # \l
+    # # \c entropy_fastgre_db
+    # # \dt
+    # # \q
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=entropy_fastgre_testuser
+      - POSTGRES_PASSWORD=entropy_fastgre_testpass
+      - POSTGRES_DB=entropy_fastgre_db
+
+volumes:
+  # $ docker volume inspect entropy_fastgre_docker_project_postgres_data
+  postgres_data:
