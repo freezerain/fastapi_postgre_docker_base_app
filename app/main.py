@@ -27,19 +27,20 @@ async def create_task():
 
 
 @app.get("/tasks/{task_id}")
-async def get_task_by_id(task_id):
+async def get_task_by_id(task_id: int):
     return await Task.objects.get(id=task_id)
 
 
 @app.put("/tasks/{task_id}")
-async def update_task(task_id):
-    task = await Task.objects.get(task_id)
-    await task.update(description=f"this was updated from code {datetime.datetime.now()}")
+async def update_task(task_id: int):
+    task = await Task.objects.get(id=task_id)
+
+    await task.update(description=f"this was updated from code")
     return f"maybe was updated: {task}"
 
 
 @app.delete("/tasks/{task_id}")
-async def delete_task_by_id(task_id):
+async def delete_task_by_id(task_id: int):
     task = await Task.objects.get(id=task_id)
     await task.delete()  # will delete the model from database
     return f"{task_id} maybe deleted, object: {task}"

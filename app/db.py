@@ -22,7 +22,7 @@ class Task(ormar.Model):
 
     id: int = ormar.Integer(primary_key=True)
     title: str = ormar.String(max_length=128, unique=True, nullable=False)
-    description: str = ormar.Boolean(default=None, nullable=True)
+    description: str = ormar.String(max_length=1024, default=None, nullable=True)
     creating_date: datetime.date = ormar.Date(default=datetime.datetime.now(), nullable=False)
     end_date: datetime.date = ormar.Date(default=datetime.datetime.now(), nullable=False)
     # placeholder until user table exists
