@@ -10,7 +10,7 @@ services:
     volumes:
       - .:/app
     ports:
-      # 127.0.0.1:8008
+      #  http://127.0.0.1:8008/
       - 8008:8000
     environment:
       - DATABASE_URL=postgresql://entropy_fastgre_testuser:entropy_fastgre_testpass@db:5432/entropy_fastgre_db
