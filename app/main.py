@@ -11,7 +11,7 @@ app = FastAPI(title="Entropy api using FastAPI, PostgreSQL and Docker")
 # Endpoints
 @app.get("/")
 async def read_root():
-    return await Task.objects.all()
+    return {"msg": "Hello World!"}
 
 
 @app.get("/tasks")
