@@ -10,27 +10,22 @@ services:
     volumes:
       - .:/app
     ports:
-      #  http://127.0.0.1:8008/
+      #  http://127.0.0.1:8008/docs
       - 8008:8000
     environment:
-      - DATABASE_URL=postgresql://entropy_fastgre_testuser:entropy_fastgre_testpass@db:5432/entropy_fastgre_db
+      - DATABASE_URL=postgresql://entropy_testuser:entropy_testpass@db:5432/entropy_db
     depends_on:
       - db
   db:
-    # $ docker-compose exec db psql --username=entropy_fastgre_testuser --dbname=entropy_fastgre_db
-    # # \l
-    # # \c entropy_fastgre_db
-    # # \dt
-    # # \q
     image: postgres:15-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     expose:
       - 5432
     environment:
-      - POSTGRES_USER=entropy_fastgre_testuser
-      - POSTGRES_PASSWORD=entropy_fastgre_testpass
-      - POSTGRES_DB=entropy_fastgre_db
+      - POSTGRES_USER=entropy_testuser
+      - POSTGRES_PASSWORD=entropy_testpass
+      - POSTGRES_DB=entropy_db
 
 volumes:
   # $ docker volume inspect entropy_fastgre_docker_project_postgres_data
