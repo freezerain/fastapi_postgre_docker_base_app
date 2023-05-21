@@ -1,17 +1,20 @@
-# app/db.py
 import datetime
 
 import databases
 import ormar
 import sqlalchemy
-
 from .config import settings
 
 database = databases.Database(settings.db_url)
 metadata = sqlalchemy.MetaData()
 
 
-# Data model mixins
+
+class BaseMeta(ormar.ModelMeta):
+    metadata = metadata
+    database = database
+
+
 class AuditMixin:
     created_by: str = ormar.String(max_length=100)
     updated_by: str = ormar.String(max_length=100, default="")
@@ -20,11 +23,6 @@ class AuditMixin:
 class DateFieldsMixins:
     created_date: datetime.datetime = ormar.DateTime(default=datetime.datetime.now)  # pass without "()"
     updated_date: datetime.datetime = ormar.DateTime(default=datetime.datetime.now)
-
-
-class BaseMeta(ormar.ModelMeta):
-    metadata = metadata
-    database = database
 
 
 class Task(ormar.Model, DateFieldsMixins, AuditMixin):
