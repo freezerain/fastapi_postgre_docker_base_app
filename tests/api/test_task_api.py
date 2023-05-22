@@ -15,6 +15,7 @@ test_task = {
 }
 
 
+# Only API is tested, and not Postgres
 def test_get_all_tasks(test_app, monkeypatch):
     test_response_payload = [test_task, test_task]
 

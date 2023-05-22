@@ -10,12 +10,6 @@ async def get_all() -> List[Task]:
 
 async def create(new_task: Task) -> Task:
     await new_task.save()
-    # try:
-    #     await task.save()
-    # except ValidationError as e:
-    #     raise HTTPException(status_code=422, detail=f"Data not valid\n{str(e)}")
-    # except Exception as e:
-    #     raise HTTPException(status_code=500, detail=f"---SAVING ERROR---\n{str(e)}")
     return new_task
 
 
