@@ -16,7 +16,7 @@ class BaseMeta(ormar.ModelMeta):
 
 
 class AuditMixin:
-    created_by: str = ormar.String(max_length=100)
+    created_by: str = ormar.String(max_length=100, default="")
     updated_by: str = ormar.String(max_length=100, default="")
 
 

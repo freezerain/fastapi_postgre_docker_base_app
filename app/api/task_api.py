@@ -1,15 +1,10 @@
 from typing import List
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from app.DB.db import Task
 from app.DB import task_repository as repo
 
 router = APIRouter()
-
-
-@router.get("/")
-async def get_root():
-    return {"msg": "Hello World!"}
 
 
 @router.get("/tasks", response_model=List[Task])
@@ -24,14 +19,24 @@ async def create_task(task: Task):
 
 @router.get("/tasks/{task_id}")
 async def get_task(task_id: int):
-    return await repo.get_by_id(task_id)
+    task = await repo.get_by_id(task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return task
 
 
 @router.put("/tasks/{task_id}")
-async def update_task(task: Task):
-    return await repo.update(task)
+async def update_task(task_id: int, task_data: Task):
+    task = await repo.get_by_id(task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return await repo.update(task_id, task_data)
 
 
 @router.delete("/tasks/{task_id}")
 async def delete_task_by_id(task_id: int):
-    return await repo.delete(task_id)
+    task = await repo.get_by_id(task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    await repo.delete(task_id)
+    return task
