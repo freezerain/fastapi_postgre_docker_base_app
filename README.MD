@@ -22,7 +22,7 @@ Fast.api, Uvicorn, ormar and pytest. More in requirements.txt
 
 ### Running
 
-Server should be up on http://127.0.0.1:8008/
+Server should be up on http://127.0.0.1:8008/ (*EYE DANGER* - white mode)
 
 By default, Swagger documentation is used. Alternatively ReDoc available on http://127.0.0.1:8008/redoc
 
