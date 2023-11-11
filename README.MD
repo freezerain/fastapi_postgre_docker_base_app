@@ -1,35 +1,49 @@
-# Entropy task api using FastAPI, PostgresSQL and Docker
+# API App using FastAPI, PostgresSQL, and Docker 🚀
 
-Very simple api template for demo purposes
+A simple and dynamic FastAPI application seamlessly integrated with a PostgresSQL database within a Docker image.
 
 ## Description
 
-This project template is designed to be used as starting point for api docker images.
+This project template serves as a versatile starting point for various future projects, fostering easy development and scalability.
 
 ## Getting Started
 
-### Major dependencies
+### Major Dependencies
 
-Fast.api, Uvicorn, ormar and pytest. More in requirements.txt
+- FastAPI
+- Uvicorn
+- Ormar
+- Pytest
+- More details in `requirements.txt`
 
 ### Installing
 
-* ```$ docker-compose up -d --build``` <- Build  🏠 
+```bash
+$ docker-compose up -d --build  # Build 🏠
+```
 
-### Maintaining:
-* ```$ docker-compose exec web pytest .``` <- Run tests 🧪
-* ```$ docker-compose down --volumes``` <-Clean DB 🧹
+### Maintenance
+
+* Run tests 🧪
+  ```bash
+  $ docker-compose exec web pytest .
+  ```
+
+* Clean DB 🧹
+  ```bash
+  $ docker-compose down --volumes
+  ```
 
 ### Running
 
-Server should be up on http://127.0.0.1:8008/
+The server is accessible at http://127.0.0.1:8008/
 
-By default, Swagger documentation is used. Alternatively ReDoc available on http://127.0.0.1:8008/redoc
+By default, Swagger documentation is available. Alternatively, you can use ReDoc at http://127.0.0.1:8008/redoc
 
-Some internal errors will be printed in docker console only.
+Certain internal errors will be displayed in the Docker console only.
 
-Good luck.
+Wishing you the best of luck! 🌟
 
 ## Authors
 
-🔥Ilia Rodikov - freeze.eli@gmail.com🔥
+🔥 Ilia Rodikov - freeze.eli@gmail.com 🔥
