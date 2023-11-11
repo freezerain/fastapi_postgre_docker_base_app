@@ -1,3 +1,6 @@
+"""
+Models and Mixins necessary for ORM to function
+"""
 import datetime
 
 import databases

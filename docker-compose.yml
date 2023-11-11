@@ -6,27 +6,31 @@ services:
   web:
     build: .
     # Move from stupid loop to condition:healthy OR reconnect logic
-    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --host 0.0.0.0'
+    command: uvicorn app.main:app --host 0.0.0.0
     volumes:
       - .:/app
     ports:
       #  http://127.0.0.1:8008/docs
-      - 8008:8000
+      - "8008:8000"
     environment:
-      - DATABASE_URL=postgresql://entropy_testuser:entropy_testpass@db:5432/entropy_db
+      - DATABASE_URL=postgresql://testuser:testpass@db:5432/main_db
     depends_on:
       - db
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://127.0.0.1:8008/" ]
+      interval: 1s
+      timeout: 3s
+      retries: 50
   db:
-    image: postgres:15-alpine
+    image: postgres:16
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     expose:
       - 5432
     environment:
-      - POSTGRES_USER=entropy_testuser
-      - POSTGRES_PASSWORD=entropy_testpass
-      - POSTGRES_DB=entropy_db
+      - POSTGRES_USER=testuser
+      - POSTGRES_PASSWORD=testpass
+      - POSTGRES_DB=main_db
 
 volumes:
-  # $ docker volume inspect entropy_fastgre_docker_project_postgres_data
   postgres_data:

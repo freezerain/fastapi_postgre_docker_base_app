@@ -1,4 +1,9 @@
+"""
+This file contains utility function helpers
+and playing role of mediator between FastAPI framework and PostgreSQL adapter
+"""
 from datetime import datetime
+
 from typing import List
 
 from .db import Task

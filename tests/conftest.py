@@ -6,6 +6,6 @@ from app.main import app
 
 # Here inject Postgres connection if needed
 @pytest.fixture(scope="module")
-def test_app():
+def postgres_client():
     test_client = TestClient(app)
     yield test_client

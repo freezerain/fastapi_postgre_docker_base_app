@@ -1,8 +1,13 @@
+"""
+Test Task API
+"""
+
 import json
 import pytest
 
 from app.DB import task_repository
 
+# Sample task data for testing
 test_task = {
     "id": 1,
     "title": "test task 1",
@@ -15,8 +20,13 @@ test_task = {
 }
 
 
-# Only API is tested, and not Postgres
-def test_get_all_tasks(test_app, monkeypatch):
+def test_get_all_tasks(postgres_client, monkeypatch):
+    """
+    Test get all tasks.
+    :param postgres_client: A client for making requests to the PostgreSQL database.
+    :param monkeypatch: Used for mocking the "get_all" call.
+    :return: None
+    """
     test_response_payload = [test_task, test_task]
 
     async def mock_get_all():
@@ -24,13 +34,20 @@ def test_get_all_tasks(test_app, monkeypatch):
 
     monkeypatch.setattr(task_repository, "get_all", mock_get_all)
 
-    response = test_app.get("/tasks")
+    response = postgres_client.get("/tasks")
 
+    # Assertion
     assert response.status_code == 200
     assert response.json() == test_response_payload
 
 
-def test_create(test_app, monkeypatch):
+def test_create(postgres_client, monkeypatch):
+    """
+    Test creating a task.
+    :param postgres_client: A client for making requests to the PostgreSQL database.
+    :param monkeypatch: Used for mocking the "create" call.
+    :return: None
+    """
     test_request_payload = test_task
 
     async def mock_create(payload):
@@ -38,18 +55,30 @@ def test_create(test_app, monkeypatch):
 
     monkeypatch.setattr(task_repository, "create", mock_create)
 
-    response = test_app.post("/tasks", content=json.dumps(test_request_payload), )
+    response = postgres_client.post("/tasks", content=json.dumps(test_request_payload), )
 
     assert response.status_code == 201
     assert response.json() == test_request_payload
 
 
-def test_create_validation_error(test_app):
-    response = test_app.post("/tasks", content=json.dumps({"description": "mock_test_desc"}))
+def test_create_validation_error(postgres_client):
+    """
+    Test validation error during task creation.
+    :param postgres_client: A client for making requests to the PostgreSQL database.
+    :return: None
+    """
+    response = postgres_client.post("/tasks", content=json.dumps({"description": "mock_test_desc"}))
+
     assert response.status_code == 422
 
 
-def test_get_task(test_app, monkeypatch):
+def test_get_task(postgres_client, monkeypatch):
+    """
+    Test retrieving a specific task.
+    :param postgres_client: A client for making requests to the PostgreSQL database.
+    :param monkeypatch: Used for mocking the "get_by_id" call.
+    :return: None
+    """
     test_response_payload = test_task
 
     async def mock_get_by_id(temp_task_id):
@@ -57,23 +86,37 @@ def test_get_task(test_app, monkeypatch):
 
     monkeypatch.setattr(task_repository, "get_by_id", mock_get_by_id)
 
-    response = test_app.get("/tasks/1")
+    response = postgres_client.get("/tasks/1")
+
     assert response.status_code == 200
     assert response.json() == test_response_payload
 
 
-def test_get_task_404_error(test_app, monkeypatch):
+def test_get_task_404_error(postgres_client, monkeypatch):
+    """
+    Test 404 error when retrieving a non-existing task.
+    :param postgres_client: A client for making requests to the PostgreSQL database.
+    :param monkeypatch: Used for mocking the "get_by_id" call.
+    :return: None
+    """
+
     async def mock_get_by_id(temp_task_id):
         return None
 
-    # Maybe should test on real DB connection
     monkeypatch.setattr(task_repository, "get_by_id", mock_get_by_id)
-    response = test_app.get("/tasks/-1")
+    response = postgres_client.get("/tasks/-1")
+
     assert response.status_code == 404
     assert response.json()["detail"] == "Task not found"
 
 
-def test_update_task(test_app, monkeypatch):
+def test_update_task(postgres_client, monkeypatch):
+    """
+    Test updating a task.
+    :param postgres_client: A client for making requests to the PostgreSQL database.
+    :param monkeypatch: Used for mocking the "get_by_id" and "update" calls.
+    :return: None
+    """
     test_update_payload = test_task
 
     async def mock_get_by_id(temp_task_id):
@@ -85,7 +128,8 @@ def test_update_task(test_app, monkeypatch):
     monkeypatch.setattr(task_repository, "get_by_id", mock_get_by_id)
     monkeypatch.setattr(task_repository, "update", mock_update)
 
-    response = test_app.put("/tasks/1", content=json.dumps(test_update_payload))
+    response = postgres_client.put("/tasks/1", content=json.dumps(test_update_payload))
+
     assert response.status_code == 200
     assert response.json() == test_update_payload
 
@@ -98,7 +142,17 @@ def test_update_task(test_app, monkeypatch):
         [1, {}, 422]
     ]
 )
-def test_update_task_422_404_error(test_app, monkeypatch, task_id, payload, status_code):
+def test_update_task_422_404_error(postgres_client, monkeypatch, task_id, payload, status_code):
+    """
+    Test 422 and 404 errors during task update.
+    :param postgres_client: A client for making requests to the PostgreSQL database.
+    :param monkeypatch: Used for mocking the "get_by_id" and "update" calls.
+    :param task_id: Task ID for testing different scenarios.
+    :param payload: Payload for testing different scenarios.
+    :param status_code: Expected HTTP status code.
+    :return: None
+    """
+
     async def mock_get_by_id(temp_task_id):
         return True if temp_task_id == 1 else False
 
@@ -108,11 +162,18 @@ def test_update_task_422_404_error(test_app, monkeypatch, task_id, payload, stat
     monkeypatch.setattr(task_repository, "get_by_id", mock_get_by_id)
     monkeypatch.setattr(task_repository, "update", mock_update)
 
-    response = test_app.put(f"/tasks/{task_id}/", content=json.dumps(payload), )
+    response = postgres_client.put(f"/tasks/{task_id}/", content=json.dumps(payload), )
+
     assert response.status_code == status_code
 
 
-def test_delete_task_by_id(test_app, monkeypatch):
+def test_delete_task_by_id(postgres_client, monkeypatch):
+    """
+    Test deleting a task by ID.
+    :param postgres_client: A client for making requests to the PostgreSQL database.
+    :param monkeypatch: Used for mocking the "get_by_id" and "delete" calls.
+    :return: None
+    """
     test_task_response = test_task
 
     async def mock_get_by_id(temp_task_id):
@@ -124,19 +185,26 @@ def test_delete_task_by_id(test_app, monkeypatch):
     monkeypatch.setattr(task_repository, "get_by_id", mock_get_by_id)
     monkeypatch.setattr(task_repository, "delete", mock_delete)
 
-    response = test_app.delete("/tasks/1")
+    response = postgres_client.delete("/tasks/1")
 
     assert response.status_code == 200
     assert response.json() == test_task_response
 
 
-def test_delete_404_error(test_app, monkeypatch):
+def test_delete_404_error(postgres_client, monkeypatch):
+    """
+    Test 404 error when deleting a non-existing task.
+    :param postgres_client: A client for making requests to the PostgreSQL database.
+    :param monkeypatch: Used for mocking the "get_by_id" call.
+    :return: None
+    """
+
     async def mock_get_by_id(temp_task_id):
         return None
 
     monkeypatch.setattr(task_repository, "get_by_id", mock_get_by_id)
 
-    response = test_app.delete("/tasks/1")
+    response = postgres_client.delete("/tasks/1")
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Task not found"
